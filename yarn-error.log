@@ -1,0 +1,31 @@
+Arguments: 
+  /Users/carlmungazi/.nvm/versions/node/v11.14.0/bin/node /usr/local/Cellar/yarn/1.15.2/libexec/bin/yarn.js init-y
+
+PATH: 
+  /Users/carlmungazi/.nvm/versions/node/v11.14.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/carlmungazi/.nvm/versions/node/v11.14.0/bin
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  11.14.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/carlmungazi/Documents/modules/aprender-js/package.json: Unexpected end of JSON input
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:304:30)
+      at /usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:315:13
+
+npm manifest: 
+  
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
