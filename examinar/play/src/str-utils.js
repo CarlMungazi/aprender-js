@@ -1,7 +1,7 @@
 const strUtils = {};
 
 strUtils.capitalizeFirstLetter = str => {
-  return str ? str.charAt(0).toUpperCase() + str.slice : '';
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
 strUtils.isBlank = str => {
