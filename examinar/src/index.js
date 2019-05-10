@@ -1,11 +1,24 @@
+'use strict';
+
 const colors = require('colors');
 const matchers = require('./matchers');
+const aprender = {
+  SILENT: false
+};
 
 const repeat = (str, n) => Array(n).join(str);
 const indent = n => repeat('    ', n);
 const indentLines = (str, n) => indent(n) + str.replace(/\n/g, `\n${indent(n)}`);
 
+const runEveryBeforeEach = () => {
+  beforeEachStack.forEach((level) => level.forEach(cb => cb()));
+}
+
+const log = str => !aprender.SILENT && console.log(str);
+
 const summary = { success: 0, fail: 0, disabled: 0 };
+
+const beforeEachStack = [ [] ];
 let indentLevel = 0;
 
 const group = (title, cb) => {
@@ -21,6 +34,8 @@ const xcheck = (title, cb) => {
 };
 
 const check = (title, cb) => {
+  runEveryBeforeEach();
+
   try {
     cb();
     console.log(`${indent(indentLevel + 1)}${' OK '.bgGreen.black} ${title.green}`);
@@ -41,14 +56,21 @@ const guarantee = val => {
 Object.assign(guarantee, matchers);
 
 const end = () => {
-  console.log(`\n${repeat('.', 60)}\n`);
-  console.log('Test summary:\n');
-  console.log(`    Success: ${summary.success}`.green);
-  console.log(`    Fail: ${summary.fail}`.red);
-  console.log(`    Disabled: ${summary.disabled}\n\n`.gray);
+  log(`\n${repeat('.', 60)}\n`);
+  log('Test summary:\n');
+  log(`    Success: ${summary.success}`.green);
+  log(`    Fail: ${summary.fail}`.red);
+  log(`    Disabled: ${summary.disabled}\n\n`.gray);
 
   if (summary.fail > 0 ) process.exit(1);
   process.exit(0);
 }
 
-module.exports = { guarantee, check, xcheck, end, group };
+const beforeAll = cb => cb();
+const beforeEach = cb => {
+  beforeEachStack[beforeEachStack.length - 1].push(cb);
+}
+
+const dsl = { guarantee, check, xcheck, end, group, beforeEach, beforeAll };
+
+module.exports = Object.assign(aprender, dsl);

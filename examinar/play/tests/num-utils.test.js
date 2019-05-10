@@ -1,7 +1,15 @@
-const { guarantee, check, xcheck, group } = require('examinar');
+const { guarantee, check, xcheck, group, beforeAll, beforeEach } = require('examinar');
 const numUtils = require('../src/num-utils');
 
+beforeAll(() => {
+  console.log("This is beforeAll in num-utils");
+});
+
 group('numUtils', () => {
+  beforeEach(() => {
+    console.log("This is beforeEach in num-utils");
+  });
+
   group('method: isPrime', () => {
     xcheck('returns true for prime numbers', () => {
       guarantee(numUtils.isPrime(2));
@@ -24,7 +32,7 @@ group('numUtils', () => {
   });
 
   group('matchers', () => {
-    check('playing with the new matchers', () => {
+    check('playing with the new matchers, beforeEach & beforeAll', () => {
       guarantee(123 === 123);
   
       guarantee.truthy('abc');
@@ -45,5 +53,6 @@ group('numUtils', () => {
       guarantee.throws(boom, 'Some error...');
     });
   });
+
 });
 
