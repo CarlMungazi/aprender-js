@@ -1,0 +1,11 @@
+{
+  "name": "aprender",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "node tests"
+  },
+  "author": "",
+  "license": "MIT"
+}
