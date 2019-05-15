@@ -2,7 +2,7 @@
 
 const colors = require('colors');
 const matchers = require('./matchers');
-const aprender = {
+const examinar = {
   SILENT: false
 };
 
@@ -14,7 +14,7 @@ const runEveryBeforeEach = () => {
   beforeEachStack.forEach((level) => level.forEach(cb => cb()));
 }
 
-const log = str => !aprender.SILENT && console.log(str);
+const log = str => !examinar.SILENT && console.log(str);
 
 const summary = { success: 0, fail: 0, disabled: 0 };
 
@@ -73,4 +73,4 @@ const beforeEach = cb => {
 
 const dsl = { guarantee, check, xcheck, end, group, beforeEach, beforeAll };
 
-module.exports = Object.assign(aprender, dsl);
+module.exports = Object.assign(examinar, dsl);

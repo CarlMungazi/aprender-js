@@ -1,4 +1,4 @@
-const { guarantee, check, group } = require('examinar');
+const { guarantee, check, group } = require('../../../aprender/tests/node_modules/examinar');
 const strUtils = require('../src/str-utils');
 
 group('strUtils', () => {

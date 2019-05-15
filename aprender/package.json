@@ -6,6 +6,8 @@
   "scripts": {
     "test": "node tests"
   },
-  "author": "",
-  "license": "MIT"
+  "devDependencies": {
+    "ava": "^1.4.1",
+    "jest": "^24.8.0"
+  }
 }
