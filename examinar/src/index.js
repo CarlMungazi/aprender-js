@@ -2,24 +2,21 @@
 
 const colors = require('colors');
 const matchers = require('./matchers');
-const examinar = {
-  SILENT: false
-};
+const createMockDom = require('./mock-dom');
 
+const examinar = {};
 const repeat = (str, n) => Array(n).join(str);
 const indent = n => repeat('    ', n);
 const indentLines = (str, n) => indent(n) + str.replace(/\n/g, `\n${indent(n)}`);
-
-const runEveryBeforeEach = () => {
-  beforeEachStack.forEach((level) => level.forEach(cb => cb()));
-}
-
-const log = str => !examinar.SILENT && console.log(str);
-
+const log = str => console.log(str);
 const summary = { success: 0, fail: 0, disabled: 0 };
 
-const beforeEachStack = [ [] ];
 let indentLevel = 0;
+
+// Hooks 
+function beforeAll (fn) {
+  return fn();
+}
 
 const group = (title, cb) => {
   indentLevel++;
@@ -28,24 +25,23 @@ const group = (title, cb) => {
   indentLevel--;
 }
 
-const xcheck = (title, cb) => {
-  console.log(`${indent(indentLevel + 1)}${' DISABLED '.bgWhite.black} ${title.gray}`);
-  summary.disabled++;
-};
-
 const check = (title, cb) => {
-  runEveryBeforeEach();
-
   try {
     cb();
     console.log(`${indent(indentLevel + 1)}${' OK '.bgGreen.black} ${title.green}`);
     summary.success++;
   } catch (e) {
     console.log(`${indent(indentLevel + 1)}${' FAIL '.bgRed.black} ${title.red}`);
+    console.log(indentLines(e.message.red, indentLevel + 1));
     console.log(indentLines(e.stack.red, indentLevel + 1));
     summary.fail++;
   }
 };
+
+function xcheck(title) {
+  console.log(`${indent(indentLevel + 1)}${' DISABLED '.bgWhite.black} ${title.gray}`);
+  summary.disabled++;
+}
 
 const guarantee = val => {
   if (val) return true;
@@ -66,11 +62,6 @@ const end = () => {
   process.exit(0);
 }
 
-const beforeAll = cb => cb();
-const beforeEach = cb => {
-  beforeEachStack[beforeEachStack.length - 1].push(cb);
-}
+const api = { guarantee, check, end, group, createMockDom, beforeAll, xcheck };
 
-const dsl = { guarantee, check, xcheck, end, group, beforeEach, beforeAll };
-
-module.exports = Object.assign(examinar, dsl);
+module.exports = Object.assign(examinar, api);

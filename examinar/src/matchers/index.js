@@ -1,33 +1,12 @@
 const deepEqual = require('deep-equal');
 
-// create module for error throwing
 module.exports = {
-  same(a, b) {
-    if (a === b) return true;
-
-    throw new Error(`The values are not the same.\n\n Found: ${a}\nWanted: ${b}`);
-  },
-  identical(a, b) {
-    if (a == b) return true;
-
-    throw new Error(`The values are not identical.\n\n Found: ${a}\nWanted: ${b}`);
-  },
   deeplyIdentical(a, b) {
     if (deepEqual(a, b)) return true;
 
     throw new Error(`The values are not deeply identical.\n\nFound: ${
       JSON.stringify(a, null, 4)}\nWanted: ${JSON.stringify(b, null, 4)}
     `)
-  },
-  falsy(val) {
-    if (!val) return true;
-
-    throw new Error(`The value is truthy.\nValue: ${val}`);
-  },
-  truthy(val) {
-    if (val) return true;
-
-    throw new Error(`The value is falsy.\nValue: ${val}`);
   },
   throws(fn, errMsg = '') {
     const didNotThrowErr = new Error('The supplied function didn\'t throw an error');
@@ -40,7 +19,15 @@ module.exports = {
 
       if (!errMsg || e.message === errMsg) return true;
 
-      throw new Error(`The error message is different from the expected one \n\nFound: ${e.message}\nWanted: ${errMsg}`);
+      throw new Error(`\n\nFound: ${e.message}\nWanted: ${errMsg}\n\n`); 
     }
+  },
+  isDomElement(element) {
+    // this is quite tricky: https://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object/36894871#36894871
+    // so we will take a naiive approach and do https://overreacted.io/why-do-react-elements-have-typeof-property/ ??
+    return element.hasOwnProperty("$$dom");
+  },
+  isMounted(element) {
+    // element needs to be given an ID so we can use get element by id to check
   }
 }
