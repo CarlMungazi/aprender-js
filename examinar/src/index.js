@@ -1,10 +1,9 @@
 'use strict';
 
 const colors = require('colors');
-const matchers = require('./matchers');
+const assert = require('./assertions');
 const createMockDom = require('./mock-dom');
 
-const examinar = {};
 const repeat = (str, n) => Array(n).join(str);
 const indent = n => repeat('    ', n);
 const indentLines = (str, n) => indent(n) + str.replace(/\n/g, `\n${indent(n)}`);
@@ -14,44 +13,34 @@ const summary = { success: 0, fail: 0, disabled: 0 };
 let indentLevel = 0;
 
 // Hooks 
-function beforeAll (fn) {
-  return fn();
-}
+const beforeAll = (fn) => fn();
 
-const group = (title, cb) => {
+function group(title, fn) {
   indentLevel++;
-  console.log(`\n${indent(indentLevel)}⇨ ${title}`.yellow);
-  cb();
+  log(`\n${indent(indentLevel)}⇨ ${title}`.yellow);
+  fn();
   indentLevel--;
 }
 
-const check = (title, cb) => {
+function check(title, fn) {
   try {
-    cb();
-    console.log(`${indent(indentLevel + 1)}${' OK '.bgGreen.black} ${title.green}`);
+    fn();
+    log(`${indent(indentLevel + 1)}${' OK '.bgGreen.black} ${title.green}`);
     summary.success++;
   } catch (e) {
-    console.log(`${indent(indentLevel + 1)}${' FAIL '.bgRed.black} ${title.red}`);
-    console.log(indentLines(e.message.red, indentLevel + 1));
-    console.log(indentLines(e.stack.red, indentLevel + 1));
+    log(`${indent(indentLevel + 1)}${' FAIL '.bgRed.black} ${title.red}`);
+    log(indentLines(e.message.red, indentLevel + 1));
+    log(indentLines(e.stack.red, indentLevel + 1));
     summary.fail++;
   }
-};
+}
 
 function xcheck(title) {
-  console.log(`${indent(indentLevel + 1)}${' DISABLED '.bgWhite.black} ${title.gray}`);
+  log(`${indent(indentLevel + 1)}${' DISABLED '.bgWhite.black} ${title.gray}`);
   summary.disabled++;
 }
 
-const guarantee = val => {
-  if (val) return true;
-
-  throw new Error('Assertion failed');
-};
-
-Object.assign(guarantee, matchers);
-
-const end = () => {
+function end() {
   log(`\n${repeat('.', 60)}\n`);
   log('Test summary:\n');
   log(`    Success: ${summary.success}`.green);
@@ -62,6 +51,4 @@ const end = () => {
   process.exit(0);
 }
 
-const api = { guarantee, check, end, group, createMockDom, beforeAll, xcheck };
-
-module.exports = Object.assign(examinar, api);
+module.exports = { assert, check, end, group, createMockDom, beforeAll, xcheck };
