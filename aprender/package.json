@@ -6,10 +6,10 @@
   "scripts": {
     "test": "node tests",
     "parcel": "parcel demo/index.html",
-    "maleta": "maleta serve demo/index.html"
+    "demo": "maleta serve demo/index.html"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.5.2",
+    "@babel/preset-env": "^7.5.4",
     "parcel-bundler": "^1.12.3"
   }
 }
