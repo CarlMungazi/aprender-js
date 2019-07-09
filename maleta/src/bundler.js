@@ -1,10 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const htmlParser = require('posthtml-parser');
+const htmlRender = require('posthtml-render');
 const { walk } = require('posthtml/lib/api');
 const babylon = require('babylon');
 const traverse = require('babel-traverse').default;
 const { transformFromAstSync } = require('@babel/core');
+const http = require('http');
+const serveStatic = require('serve-static');
+const finalhandler = require('finalhandler');
 
 let moduleID = 0;
 const rootAsset = {
@@ -12,7 +16,8 @@ const rootAsset = {
   content: '',
   entryJsFilePath: '',
   rootDir: '',
-  dependencyGraph: ''
+  dependencyGraph: '',
+  ast: ''
 }
 
 function getRootDir(file) {
@@ -23,6 +28,8 @@ function getRootDir(file) {
 
 function extractEntryJSFilePathFromRootHtml(rootAsset) {
   const parsedHTML = htmlParser(rootAsset.content);
+  
+  rootAsset.ast = parsedHTML;
   parsedHTML.walk = walk;
 
   parsedHTML.walk(node => {
@@ -112,9 +119,14 @@ function createJSAsset(filename) {
 }
 
 function createBundle(entryFile) {
+  let modules = '';
+  let bundle;
   const rootAsset = createRootAssetFromRootHtml(entryFile);
 
-  let modules = '';
+  const bundlePath = path.resolve(rootAsset.outDir, 'index.js');;
+  const bundleHtml = htmlRender(rootAsset.ast);
+  const bundleHtmlPath = path.resolve(rootAsset.outDir, 'index.html');
+  
 
   rootAsset.dependencyGraph.forEach(mod => {
     modules += `${mod.id}: [
@@ -125,7 +137,7 @@ function createBundle(entryFile) {
     ],`;
   });
 
-  const result = `
+  bundle = `
     (function(modules) {
       function require(id) {
         const [fn, mapping] = modules[id];
@@ -144,14 +156,27 @@ function createBundle(entryFile) {
       require(0);
     })({${modules}})
   `;
-  console.log(result)
 
 
-  // create the output directory
-  // fs.mkdirSync(rootAsset.outDir);
+  // create the output directory if it does not exist
+  if (!fs.existsSync(rootAsset.outDir)) {
+    fs.mkdirSync(rootAsset.outDir);
+  }
+  
 
   // create output html and js files
+  fs.writeFileSync(bundlePath, bundle)
+  fs.writeFileSync(bundleHtmlPath, bundleHtml);
+
   // create server and serve files
+  const serve = serveStatic(rootAsset.outDir); 
+  const server = http.createServer( function onRequest(req, res) {
+    serve(req, res, finalhandler(req, res));
+  });
+
+  server.listen(8080);
+  console.log('Now serving the application on http://localhost:8080');
+
 };
 
 module.exports = createBundle;
