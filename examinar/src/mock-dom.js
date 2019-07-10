@@ -1,6 +1,7 @@
 "use strict";
 
 const document = {
+  _ids: new Map(),
   createElement(tag) {
     const element = {
       nodeType: 1,
@@ -33,6 +34,11 @@ const document = {
   },
   getElementById(id) {
     // implement a hash map look up: https://stackoverflow.com/questions/2711303/javascript-getelementbyid-lookups-hash-map-or-recursive-tree-traversal
+    if (this._ids.has(id)) {
+      return this._ids.get(id)
+    }
+
+    return null;
   }
 }
 
@@ -53,6 +59,14 @@ function appendChild(child) {
 
 function setAttribute(name, value) {
   this.attributes[name] = value;
+
+  if (name === 'id' && document._ids.has(value)) {
+    throw new Error(`${value} is already the id of another element`);
+  }
+  
+  if (name === 'id' && !document._ids.has(value)) {
+    document._ids.set(value, this)
+  }
 }
 
 function createMockDom() {
@@ -60,9 +74,6 @@ function createMockDom() {
   document.documentElement.appendChild(document.createElement("head"));
   document.body = document.createElement("body");
   document.documentElement.appendChild(document.body);
-  const $root = document.createElement("div");
-  $root.setAttribute('id', 'root');
-  document.body.appendChild($root);
 
   global.document = document;
 }

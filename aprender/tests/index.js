@@ -1,11 +1,11 @@
-const { assert, group, xcheck, check, end, createMockDom, beforeAll } = require('examinar'); 
+const { assert, group, check, end, createMockDom, beforeAll } = require('examinar'); 
 const createElement = require('../src/createElement');
 const render = require('../src/render');
 const mount = require('../src/mount');
 
 group('aprender', () => {
   let element;
-
+  
   beforeAll(() => {
     element = createElement('div', {
       children: [
@@ -15,7 +15,12 @@ group('aprender', () => {
     });
 
     createMockDom();
-  })
+    
+    const $root = document.createElement("div");
+    $root.setAttribute('id', 'root');
+    document.body.appendChild($root);
+
+  });
 
   check('it creates a virtual dom object', () => {
     const target = createElement('div', { children: [{ type: 'div'}] });
@@ -33,11 +38,11 @@ group('aprender', () => {
     assert.throws(err, 'The options argument must be an object');
   });
 
-  xcheck('it creates DOM elements', () => {
+  check('it creates DOM elements', () => {
     assert.isDomElement( render(element) );
   });
 
-  xcheck('it mounts DOM elements', () => {
+  check('it mounts DOM elements', () => {
     const app = render(element);
     mount(app, document.getElementById('root'));
 
