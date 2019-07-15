@@ -23,11 +23,15 @@ module.exports = {
     }
   },
   isDomElement(element) {
-    // this is quite tricky: https://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object/36894871#36894871
-    // so we will take a naiive approach and do https://overreacted.io/why-do-react-elements-have-typeof-property/ ??
-    return element.hasOwnProperty("$$dom");
+    if (element.hasOwnProperty("$$dom") && element.$$dom) return true;
+
+    throw new Error('The supplied element is not a DOM element')
   },
-  isMounted(element) {
-    // element needs to be given an ID so we can use get element by id to check
+  isMounted(element, parentElement) {
+    if (parentElement.childNodes.length > 1) throw new Error('The root element has more than one child');
+
+    if (parentElement.childNodes[0] === element) return true;
+
+    throw new Error('The supplied element has not been mounted');
   }
 }
