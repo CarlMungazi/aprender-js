@@ -4,7 +4,9 @@ const render = require('../src/render');
 const mount = require('../src/mount');
 
 group('aprender', () => {
+  let $root;
   let element;
+  let app;
   
   beforeAll(() => {
     element = createElement('div', {
@@ -16,9 +18,11 @@ group('aprender', () => {
 
     createMockDom();
     
-    const $root = document.createElement("div");
+    $root = document.createElement("div");
     $root.setAttribute('id', 'root');
     document.body.appendChild($root);
+
+    app = render(element);
 
   });
 
@@ -39,14 +43,13 @@ group('aprender', () => {
   });
 
   check('it creates DOM elements', () => {
-    assert.isDomElement( render(element) );
+    assert.isDomElement(app);
   });
 
   check('it mounts DOM elements', () => {
-    const app = render(element);
     mount(app, document.getElementById('root'));
-
-    assert.isMounted(element);
+    
+    assert.isMounted(app, $root);
   });
 });
 
