@@ -1,4 +1,4 @@
- function createElement (type, opts) {
+ module.exports = function createElement (type, opts) {
   if (type == null || typeof type !== 'string') {
     throw Error('The element type must be a string');
   }
@@ -15,5 +15,3 @@
     children
   }
 }
-
-module.exports = { createElement };
