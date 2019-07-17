@@ -1,34 +1,23 @@
-## Aprender
+## Learn JavaScript By Building A UI Framework
 
 ### What Is This?
 
-A project similar to [this](https://github.com/taniarascia/laconia). They say one of the best ways is to learn is by doing. Well, this is just that. There are so many tools used in frontend development and this is my attempt at learning some of them from a first principles approach. I have built a basic, non-production ready, version of various parts of the frontend stack and documented the lessons learned in the process.
+A project similar to [this](https://github.com/taniarascia/laconia). They say one of the best ways is to learn is by doing. Well, this is just that. There are so many tools used in frontend development and this is my attempt at learning some of them from a first principles approach. I am building basic, non-production versions of various parts of the frontend stack and documenting the lessons learned in the process.
+
+The articles written in the series so far are:
+
+- [Introduction to the UI framework](https://dev.to/carlmungazi/learning-javascript-by-building-a-ui-framework-from-scratch-1767)
+- [Building a testing library](https://dev.to/carlmungazi/learn-js-by-building-a-ui-framework-part-2-testing-3pff)
+
+Whilst not part of the series, [this](https://www.smashingmagazine.com/2019/07/javascript-knowledge-reading-source-code/#comments-javascript-knowledge-reading-source-code) article I wrote for Smashing Magazine explains some of the benefits of this project.
 
 ### Aprender
 
-Aprender is the UI framework built using the virtual DOM paradigm. 
+Aprender is the UI framework and it is built using the virtual DOM paradigm. It contains the following features:
+- Turning JavaScript objects into DOM elements
 
 ### Examinar
 
-Examinar is a testing framework
-
-### Maleta
-
-Maleta is the module bundler
-
-### Credits
-
-#### Building the framework
-- https://dev.to/ycmjason/building-a-simple-virtual-dom-from-scratch-3d05
-
-#### Building the testing library
-- https://medium.freecodecamp.org/learnbydiy-how-to-create-a-javascript-unit-testing-framework-from-scratch-c94e0ba1c57a
-
-### Building the module bundler
-- https://github.com/ronami/minipack
-
-https://medium.com/@maheshsenni/creating-a-module-bundler-with-hot-module-replacement-b439f0cc660f
-https://medium.freecodecamp.org/lets-learn-how-module-bundlers-work-and-then-write-one-ourselves-b2e3fe6c88ae
-
-https://blog.logrocket.com/websockets-tutorial-how-to-go-real-time-with-node-and-react-8e4693fbf843 - web sockets for hot reloading
-https://www.twilio.com/blog/how-to-build-a-cli-with-node-js?utm_source=youtube&utm_medium=video&utm_campaign=node-cli-howto
+Examinar is a testing framework not modelled upon anything in particular. It has the following features:
+- Assertions
+- A DOM implementation for the node environment
