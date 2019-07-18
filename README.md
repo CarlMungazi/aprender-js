@@ -8,6 +8,7 @@ The articles written in the series so far are:
 
 - [Introduction to the UI framework](https://dev.to/carlmungazi/learning-javascript-by-building-a-ui-framework-from-scratch-1767)
 - [Building a testing library](https://dev.to/carlmungazi/learn-js-by-building-a-ui-framework-part-2-testing-3pff)
+- [Rendering and testing DOM elements](https://dev.to/carlmungazi/learn-javascript-by-building-a-ui-framework-part-3-rendering-testing-dom-elements-97l)
 
 Whilst not part of the series, [this](https://www.smashingmagazine.com/2019/07/javascript-knowledge-reading-source-code/#comments-javascript-knowledge-reading-source-code) article I wrote for Smashing Magazine explains some of the benefits of this project.
 
