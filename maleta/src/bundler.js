@@ -31,17 +31,21 @@ function extractEntryJSFilePathFromRootHtml(rootAsset) {
   
   rootAsset.ast = parsedHTML;
   parsedHTML.walk = walk;
-
+ 
   parsedHTML.walk(node => {
     if (node.tag === 'script') {
-      rootAsset.entryJsFilePath = path.resolve(rootAsset.rootDir, node.attrs.src)
+      if (node.attrs.src.endsWith('/index.js')) {
+        rootAsset.entryJsFilePath = path.resolve(rootAsset.rootDir, node.attrs.src)
+      }
     }
 
     return node;
   });
+
+  if (!rootAsset.entryJsFilePath) throw Error('No JavaScript entry file has been provided or specified. Either specify an entry file or make sure the entry file is named \'index.js\'');
 }
 
-function createRootAssetFromRootHtml(file) {
+function createRootAssetFromRootHtml(file, config) {
   // read the contents of the file
   rootAsset.content = fs.readFileSync(file, 'utf-8');
   // find root directory
@@ -49,7 +53,11 @@ function createRootAssetFromRootHtml(file) {
   // create path to output directory
   rootAsset.outDir = path.resolve('dist');
   // find path for entry js file
-  extractEntryJSFilePathFromRootHtml(rootAsset);
+  if (config.entryFile) {
+    rootAsset.entryJsFilePath = path.resolve(rootAsset.rootDir, config.entryFile);
+  } else {
+    extractEntryJSFilePathFromRootHtml(rootAsset);
+  }
 
   // create dependency graph
   rootAsset.dependencyGraph = createDependencyGraph(rootAsset.entryJsFilePath);
@@ -61,22 +69,24 @@ function createRootAssetFromRootHtml(file) {
 function createDependencyGraph(entryFile) {
   const mainAsset = createJSAsset(entryFile);
 
-  const queueOfAssetsToParseTheirDependencies = [mainAsset]
+  const assetsThatNeedDependenciesExtracted = [ mainAsset ];
   
-  for ( asset of queueOfAssetsToParseTheirDependencies ) {
+  for ( asset of assetsThatNeedDependenciesExtracted ) {
     const dirname = path.dirname(asset.filename);
-
+    
     asset.relativeFilePathsOfDependenciesArray.forEach(filePath => {
-      const absolutePath = path.join(dirname, `${filePath}.js`); // we only deal with JS files, so we assume it here
+      // we only deal with JS files, so we assume it here
+      // plus we get this from the traverse module
+      const absolutePath = path.join(dirname, `${filePath}.js`); 
       const dependenciesOfFileBeingCurrentlyProcessed = createJSAsset(absolutePath);
 
       asset.mapping[filePath] = dependenciesOfFileBeingCurrentlyProcessed.id;
 
-      queueOfAssetsToParseTheirDependencies.push(dependenciesOfFileBeingCurrentlyProcessed);
+      assetsThatNeedDependenciesExtracted.push(dependenciesOfFileBeingCurrentlyProcessed);
     });
   }
   
-  return queueOfAssetsToParseTheirDependencies;
+  return assetsThatNeedDependenciesExtracted;
 }
 
 function createJSAsset(filename) {
@@ -106,7 +116,8 @@ function createJSAsset(filename) {
   const id = moduleID++;
   
   const { code } = transformFromAstSync(ast, null, {
-    presets: ['@babel/env'] // had to install @babel-env in aprender.js node modules
+    presets: ['@babel/env'],
+    cwd: __dirname
   });
 
   return {
@@ -118,10 +129,10 @@ function createJSAsset(filename) {
   }
 }
 
-function createBundle(entryFile) {
+function createBundle(entryFile, config) {
   let modules = '';
   let bundle;
-  const rootAsset = createRootAssetFromRootHtml(entryFile);
+  const rootAsset = createRootAssetFromRootHtml(entryFile, config);
 
   const bundlePath = path.resolve(rootAsset.outDir, 'index.js');;
   const bundleHtml = htmlRender(rootAsset.ast);
@@ -146,9 +157,9 @@ function createBundle(entryFile) {
           return require(mapping[name]);
         }
 
-        const module = {};
+        const module = { exports: {} };
 
-        fn(localRequire, module);
+        fn(localRequire, module, module.exports);
 
         return module.exports;
       }
@@ -165,7 +176,7 @@ function createBundle(entryFile) {
   
 
   // create output html and js files
-  fs.writeFileSync(bundlePath, bundle)
+  fs.writeFileSync(bundlePath, bundle);
   fs.writeFileSync(bundleHtmlPath, bundleHtml);
 
   // create server and serve files
