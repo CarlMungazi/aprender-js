@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk');
 const program = require('commander');
 const version = require('../package.json').version;
 const bundler = require('../src/bundler');
@@ -12,17 +11,28 @@ program
   .description('serves the files')
   .option(
     '--entry <file>',
-    'set the name of the entry HTML file'
+    'set the name of the entry JS file'
   )
   .action(bundle);
 
-// Make serve the default command 
-if (process.argv[2] !== 'serve') process.argv.splice(2, 0, 'serve');
+program
+  .command('help [command]')
+  .description('display help information for a command')
+  .action(function(command) {
+    let cmd = program.commands.find(c => c.name() === command) || program;
+    cmd.help();
+  });
+
+const args = process.argv;
+
+// Make serve the default command except for --help
+if (args[2] === '--help' || args[2] === '-h') args[2] = 'help';
+if (!args[2] || !program.commands.some(c => c.name() === args[2])) args.splice(2, 0, 'serve');
 
 program.parse(process.argv);
 
-function bundle (entryFile, command) {
-  bundler(entryFile, {
-    entryFile: command.entry
+function bundle (entryJsFile, command) {
+  bundler(entryJsFile, {
+    entryJsFile: command.entry
   });
 }
