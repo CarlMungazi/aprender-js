@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const htmlParser = require('posthtml-parser');
@@ -26,7 +27,7 @@ function getRootDir(file) {
   return path.resolve(parsed.dir);
 }
 
-function extractEntryJSFilePathFromRootHtml(rootAsset) {
+function extractEntryJSFilePathFromEntryFile(rootAsset) {
   const parsedHTML = htmlParser(rootAsset.content);
   
   rootAsset.ast = parsedHTML;
@@ -45,7 +46,7 @@ function extractEntryJSFilePathFromRootHtml(rootAsset) {
   if (!rootAsset.entryJsFilePath) throw Error('No JavaScript entry file has been provided or specified. Either specify an entry file or make sure the entry file is named \'index.js\'');
 }
 
-function createRootAssetFromRootHtml(file, config) {
+function createRootAssetFromEntryFile(file, config) {
   // read the contents of the file
   rootAsset.content = fs.readFileSync(file, 'utf-8');
   // find root directory
@@ -53,10 +54,11 @@ function createRootAssetFromRootHtml(file, config) {
   // create path to output directory
   rootAsset.outDir = path.resolve('dist');
   // find path for entry js file
-  if (config.entryFile) {
-    rootAsset.entryJsFilePath = path.resolve(rootAsset.rootDir, config.entryFile);
+  if (config.entryJsFile) {
+    rootAsset.ast = htmlParser(rootAsset.content);
+    rootAsset.entryJsFilePath = path.resolve(rootAsset.rootDir, config.entryJsFile);
   } else {
-    extractEntryJSFilePathFromRootHtml(rootAsset);
+    extractEntryJSFilePathFromEntryFile(rootAsset);
   }
 
   // create dependency graph
@@ -67,6 +69,7 @@ function createRootAssetFromRootHtml(file, config) {
 
 // using the entry js file from the entry html file, extract all the dependencies
 function createDependencyGraph(entryFile) {
+
   const mainAsset = createJSAsset(entryFile);
 
   const assetsThatNeedDependenciesExtracted = [ mainAsset ];
@@ -90,7 +93,6 @@ function createDependencyGraph(entryFile) {
 }
 
 function createJSAsset(filename) {
-  
   const content = fs.readFileSync(filename, 'utf-8');
   const ast = babylon.parse(content, { sourceType: 'module' });
 
@@ -132,9 +134,9 @@ function createJSAsset(filename) {
 function createBundle(entryFile, config) {
   let modules = '';
   let bundle;
-  const rootAsset = createRootAssetFromRootHtml(entryFile, config);
+  const rootAsset = createRootAssetFromEntryFile(entryFile, config);
 
-  const bundlePath = path.resolve(rootAsset.outDir, 'index.js');;
+  const bundlePath = path.resolve(rootAsset.outDir, 'index.js');
   const bundleHtml = htmlRender(rootAsset.ast);
   const bundleHtmlPath = path.resolve(rootAsset.outDir, 'index.html');
   
@@ -185,8 +187,8 @@ function createBundle(entryFile, config) {
     serve(req, res, finalhandler(req, res));
   });
 
-  server.listen(8080);
-  console.log('Now serving the application on http://localhost:8080');
+  server.listen(3000);
+  console.log(`${chalk.bold('Now serving the application on')} ${chalk.red('http://localhost:3000')}`);
 
 };
 
