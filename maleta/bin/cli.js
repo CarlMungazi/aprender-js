@@ -31,8 +31,8 @@ if (!args[2] || !program.commands.some(c => c.name() === args[2])) args.splice(2
 
 program.parse(process.argv);
 
-function bundle (entryJsFile, command) {
-  bundler(entryJsFile, {
+function bundle (entryFile, command) {
+  bundler(entryFile, {
     entryJsFile: command.entry
   });
 }

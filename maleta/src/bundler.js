@@ -72,9 +72,9 @@ function createDependencyGraph(entryFile) {
 
   const mainAsset = createJSAsset(entryFile);
 
-  const assetsThatNeedDependenciesExtracted = [ mainAsset ];
+  const assetQueue = [ mainAsset ];
   
-  for ( asset of assetsThatNeedDependenciesExtracted ) {
+  for ( asset of assetQueue ) {
     const dirname = path.dirname(asset.filename);
     
     asset.relativeFilePathsOfDependenciesArray.forEach(filePath => {
@@ -85,11 +85,11 @@ function createDependencyGraph(entryFile) {
 
       asset.mapping[filePath] = dependenciesOfFileBeingCurrentlyProcessed.id;
 
-      assetsThatNeedDependenciesExtracted.push(dependenciesOfFileBeingCurrentlyProcessed);
+      assetQueue.push(dependenciesOfFileBeingCurrentlyProcessed);
     });
   }
   
-  return assetsThatNeedDependenciesExtracted;
+  return assetQueue;
 }
 
 function createJSAsset(filename) {
