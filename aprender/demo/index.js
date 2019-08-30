@@ -4,7 +4,7 @@ const button = aprender.createElement('button', { children: ['Click Me!'] });
 const component = aprender.createElement(
   'div', 
   {
-    attrs: { id: 'app'},
+    attrs: { id: 'root-component'},
     children: [
       'Hello, world!',
       button
