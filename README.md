@@ -10,6 +10,7 @@ The articles written in the series so far are:
 - [Building a testing library](https://dev.to/carlmungazi/learn-js-by-building-a-ui-framework-part-2-testing-3pff)
 - [Rendering and testing DOM elements](https://dev.to/carlmungazi/learn-javascript-by-building-a-ui-framework-part-3-rendering-testing-dom-elements-97l)
 - [Building a module bundler](https://dev.to/carlmungazi/learn-javascript-by-building-a-ui-framework-part-4-creating-a-module-bundler-11el)
+- [Adding events to DOM elements](https://dev.to/carlmungazi/learn-javascript-by-building-a-ui-framework-part-5-adding-events-to-dom-elements-3kod)
 
 Whilst not part of the series, [this](https://www.smashingmagazine.com/2019/07/javascript-knowledge-reading-source-code/#comments-javascript-knowledge-reading-source-code) article I wrote for Smashing Magazine explains some of the benefits of this project.
 
@@ -17,6 +18,7 @@ Whilst not part of the series, [this](https://www.smashingmagazine.com/2019/07/j
 
 Aprender is the UI framework and it is built using the virtual DOM paradigm. It contains the following features:
 - Turning JavaScript objects into DOM elements
+- Adding [on-event](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers) handlers to DOM elements
 
 ## Examinar
 
