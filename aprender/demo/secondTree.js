@@ -6,7 +6,6 @@
 // - As a user, I can clear the search results
 
 const aprender = require('../src/aprender');
-const NewContainer = require('./secondTree');
 
 const Button = aprender.createElement('button', { 
     attrs: {
@@ -66,7 +65,7 @@ const InfoBox = description => aprender.createElement('div', {
   children: [
     aprender.createElement('p', {
       children: [
-        'description'
+        'this is a new description'
       ]
     })
   ]
@@ -82,42 +81,4 @@ const Container = () => {
   })
 }
 
-const App = aprender.render(Container());
-
-aprender.mount(App, document.getElementById('app'));
-const diff = aprender.diff(Container(), NewContainer());
-console.log(diff)
-
-// const createVApp = count => {
-//   return aprender.createElement('div', {
-//     attrs: {
-//       id: 'app',
-//       dataCount: count, // we use the count here
-//     },
-//     children: [
-//       'The current count is: ',
-//       String(count), // and here
-//       ...Array.from({ length: count }, () => aprender.createElement('img', {
-//         attrs: {
-//           src: 'https://media.giphy.com/media/cuPm4p4pClZVC/giphy.gif',
-//         },
-//       })),
-//     ],
-//   }); 
-// }
-
-// let vApp = createVApp(0);
-// const $app = aprender.render(vApp);
-// let $rootEl = aprender.mount($app, document.getElementById('app'));
-
-// setInterval(() => {
-//   const n = Math.floor(Math.random() * 10);
-//   const vNewApp = createVApp(n);
-//   const patch = aprender.diff(vApp, vNewApp);
-  
-//   // we might replace the whole $rootEl,
-//   // so we want the patch will return the new $rootEl
-//   $rootEl = patch($rootEl);
-
-//   vApp = vNewApp;
-// }, 1000);
+module.exports = Container;
