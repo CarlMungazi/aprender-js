@@ -43,42 +43,47 @@ function diffAttributes(oldAttrs, newAttrs) {
   }
 }
 
-function diffChildren(oldChildren, newChildren) {
-  function zipFn(xs, ys) {
-    const zipped = [];
-    for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
-      zipped.push([xs[i], ys[i]]);
-    }
-
-    return zipped;
-  }
-
-  const childPatches = [];
+function diffChildren(oldChildren, newChildren, patches, index) {
   oldChildren.forEach((oldChild, idx) => {
-    childPatches.push(performDiff(oldChild, newChildren[idx]))
+    index++
+    performDiff(oldChild, newChildren[idx], patches, index)
   })
 
-  const additionalPatches = [];
-  for (const additionalChild of newChildren.slice(oldChildren.length)) {
-    additionalPatches.push(($node => {
-      $node.appendChild(render(additionalChild));
-      return $node;
-    }))
-  }
+  // function zipFn(xs, ys) {
+  //   const zipped = [];
+  //   for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
+  //     zipped.push([xs[i], ys[i]]);
+  //   }
 
-  return $parent => {
-    // child patches expecting the $child, not parent
-    // so we cannot just loop through them & call patch($parent)
-    for (const [patch, $child] of zipFn(childPatches, $parent.childNodes)) {
-      patch($child);
-    }
+  //   return zipped;
+  // }
 
-    for (const patch of additionalPatches) {
-      patch($parent)
-    }
+  // const childPatches = [];
+  // oldChildren.forEach((oldChild, idx) => {
+  //   childPatches.push(performDiff(oldChild, newChildren[idx]))
+  // })
 
-    return $parent;
-  }
+  // const additionalPatches = [];
+  // for (const additionalChild of newChildren.slice(oldChildren.length)) {
+  //   additionalPatches.push(($node => {
+  //     $node.appendChild(render(additionalChild));
+  //     return $node;
+  //   }))
+  // }
+
+  // return $parent => {
+  //   // child patches expecting the $child, not parent
+  //   // so we cannot just loop through them & call patch($parent)
+  //   for (const [patch, $child] of zipFn(childPatches, $parent.childNodes)) {
+  //     patch($child);
+  //   }
+
+  //   for (const patch of additionalPatches) {
+  //     patch($parent)
+  //   }
+
+  //   return $parent;
+  // }
 }
 
 
@@ -91,7 +96,9 @@ function diffChildren(oldChildren, newChildren) {
 function diff(oldTree, newTree) {
   // store the differences between the two trees
   const patches = {};
-  performDiff(oldTree, newTree, patches)
+  // keep track of where we are in the process
+  const index = 0;
+  performDiff(oldTree, newTree, patches, index)
 
   return patches;
 }
@@ -101,47 +108,57 @@ function diff(oldTree, newTree) {
  * @param {object} oldTree - the current virtual dom tree
  * @param {object} newTree - the new virtual dom tree
  * @param {object} patches - the object which stores the changes between the trees
+ * @param {index} index - a counter to store where we are in the process
  */
-function performDiff(oldTree, newTree, patches) {
+function performDiff(oldTree, newTree, patches, index) {
   // if we are in a recursive call, we need to keep track of the changes that
   // need to be made
   const currentPatch = [];
 
   if (newTree === undefined) {
-    // not sure what to do here?
-    // this would mean the tree has been removed?
-  }
-
-
-  
-  if (typeof oldTree === 'string' || typeof newTree === 'string') {
+    // we do nothing here because the final else statement will deal with it
+  } else if (typeof oldTree === 'string' && typeof newTree === 'string') {  // are we deal with text nodes?
     if (oldTree !== newTree) {
-      // they could have different values
-        // or one tree is a text node and the other an element node
-        // but render the new tree regardless
-        return renderNewTree.bind(null, newTree)
-    } else {
       // the trees are both strings with different values
-      return $node => $node;
+      currentPatch.push({
+        type: 'TEXT',
+        content: newTree
+      })
     }
+  } else if (oldTree.type === newTree.type) {
+    // what if only one of them has children?
+
+    // let us work on the children 
+    diffChildren(oldTree.children, newTree.children, patches, index)
+  } else {
+    // the trees are different, so out with the old and in with the new
+    currentPatch.push({
+      type: 'REPLACE',
+      node: newTree
+    })
   }
 
-  if (oldTree.tagName !== newTree.tagName) {
-    // assume they are different and do attempt to find differences
-    // render the new tree and mount it
-    return renderNewTree.bind(null, newTree)
-  }
+  // if (oldTree.tagName !== newTree.tagName) {
+  //   // assume they are different and do attempt to find differences
+  //   // render the new tree and mount it
+  //   return renderNewTree.bind(null, newTree)
+  // }
 
-  // we also assume both objects share the same `tagName
-  if (oldTree.attrs && newTree.attrs) {
-    const patchAttrs = diffAttributes(oldTree.attrs, newTree.attrs);
-    const patchChildren = diffChildren(oldTree.children, newTree.children);
+  // // we also assume both objects share the same `tagName
+  // if (oldTree.attrs && newTree.attrs) {
+  //   const patchAttrs = diffAttributes(oldTree.attrs, newTree.attrs);
+  //   const patchChildren = diffChildren(oldTree.children, newTree.children);
   
-    return $node => {
-      patchAttrs($node);
-      patchChildren($node);
-      return $node;
-    }
+  //   return $node => {
+  //     patchAttrs($node);
+  //     patchChildren($node);
+  //     return $node;
+  //   }
+  // }
+
+  // we have changes which need to be recorded
+  if (currentPatch.length) {
+    patches[index] = currentPatch
   }
 }
 
