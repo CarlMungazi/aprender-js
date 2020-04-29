@@ -5,8 +5,32 @@
 // - As a user, after clicking the search button I can view the search results
 // - As a user, I can clear the search results
 
+/* BEGINNING OF TEST */
+
+// const aprender = require('../src/aprender');
+
+// const oldTree = aprender.createElement('div', { 
+//     children: ['Search', aprender.createElement('p')] 
+//   }
+// );
+
+// const newTree = aprender.createElement('div', { 
+//   children: ['No Search', aprender.createElement('span')] 
+//   }
+// );
+
+// const root = aprender.render(oldTree)
+// aprender.mount(root, document.getElementById('app'))
+
+// const diff = aprender.diff(oldTree, newTree);
+
+// setTimeout(() => {
+//   aprender.patch(root, diff);
+// }, 5000)
+
+/* END OF TEST */
+
 const aprender = require('../src/aprender');
-const NewContainer = require('./secondTree');
 
 const Button = aprender.createElement('button', { 
     attrs: {
@@ -57,7 +81,7 @@ const Dropdown = aprender.createElement('select', {
 
 const SelectAPI = aprender.createElement('div', {
   children: [
-    aprender.createElement('h2', { children: ['Select API: ']}),
+    aprender.createElement('h3', { children: ['Select API: ']}),
     Dropdown
   ]
 })
@@ -66,7 +90,7 @@ const InfoBox = description => aprender.createElement('div', {
   children: [
     aprender.createElement('p', {
       children: [
-        'description'
+        'The description goes here'
       ]
     })
   ]
@@ -85,39 +109,3 @@ const Container = () => {
 const App = aprender.render(Container());
 
 aprender.mount(App, document.getElementById('app'));
-const diff = aprender.diff(Container(), NewContainer());
-console.log(diff)
-
-// const createVApp = count => {
-//   return aprender.createElement('div', {
-//     attrs: {
-//       id: 'app',
-//       dataCount: count, // we use the count here
-//     },
-//     children: [
-//       'The current count is: ',
-//       String(count), // and here
-//       ...Array.from({ length: count }, () => aprender.createElement('img', {
-//         attrs: {
-//           src: 'https://media.giphy.com/media/cuPm4p4pClZVC/giphy.gif',
-//         },
-//       })),
-//     ],
-//   }); 
-// }
-
-// let vApp = createVApp(0);
-// const $app = aprender.render(vApp);
-// let $rootEl = aprender.mount($app, document.getElementById('app'));
-
-// setInterval(() => {
-//   const n = Math.floor(Math.random() * 10);
-//   const vNewApp = createVApp(n);
-//   const patch = aprender.diff(vApp, vNewApp);
-  
-//   // we might replace the whole $rootEl,
-//   // so we want the patch will return the new $rootEl
-//   $rootEl = patch($rootEl);
-
-//   vApp = vNewApp;
-// }, 1000);

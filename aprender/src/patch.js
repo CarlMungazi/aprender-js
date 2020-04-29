@@ -1,20 +1,31 @@
 const render = require('./render');
 
+/**
+ * @param {HTML element} rootDomNode - the HTML element being updated
+ * @param {object} patches - the object which contains the changes being made
+ * @return {void}
+ */
 function patch(rootDomNode, patches) {
-  const walker = 0;
-  performPatches(rootDomNode, patches, walker)
+  // keep track of where we are in the process
+  const index = 0;
+  performPatches(rootDomNode, patches, index)
 }
 
-function performPatches(node, patches, walker) {
-  const currentPatches = patches[walker];
+/**
+ * @param {HTML element} node - the HTML element being updated
+ * @param {object} patches - the object which contains the changes being made
+ * @param {index} index - a counter to store where we are in the process
+ * @return {void}
+ */
+function performPatches(node, patches, index) {
+  const currentPatches = patches[index];
 
   // does this node have any children?
   if (node.childNodes) {
-    for (let i = 0; i < node.childNodes.length; i++) {
-      const child = node.childNodes[i];
-      walker++;
-      performPatches(child, patches, walker)
-    }
+    node.childNodes.forEach(node => {
+      index++
+      performPatches(node, patches, index)
+    });
   }
 
   if (currentPatches) {
@@ -22,23 +33,22 @@ function performPatches(node, patches, walker) {
   }
 }
 
+/**
+ * @param {HTML element} node - the HTML element being updated
+ * @param {object} currentPatches - the object which contains the changes being made in the current iteration
+ * @return {void}
+ */
 function applyPatches(node, currentPatches) {
-  function each(array, fn) {
-    for (let i = 0, length = array.length; i < length; i++) {
-      fn(array[i], i)
-    }
-  }
-
-  each(currentPatches, function renderNewDomElement(currentPatch) {
-    switch(currentPatch.type) {
+  currentPatches.forEach(patch => {
+    switch (patch.type) {
       case 'TEXT': {
         if (node.textContent) {
-          node.textContent = currentPatch.content
+          node.textContent = patch.content
         }
         break;
       }
       case 'REPLACE': {
-        const newNode = render(currentPatch.node);
+        const newNode = render(patch.node);
         node.parentNode.replaceChild(newNode, node);
         break;
       }
