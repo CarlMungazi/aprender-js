@@ -1,4 +1,4 @@
- module.exports = function createElement (type, opts) {
+function createVirtualElement (type, opts) {
   if (type == null || typeof type !== 'string') {
     throw Error('The element type must be a string');
   }
@@ -14,4 +14,8 @@
     attrs,
     children
   }
+}
+
+module.exports = function h (type, opts) {
+  return createVirtualElement(type, opts);
 }
