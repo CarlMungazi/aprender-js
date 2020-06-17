@@ -1,6 +1,6 @@
 function createVirtualElement (type, opts) {
-  if (type == null || typeof type !== 'string') {
-    throw Error('The element type must be a string');
+  if ( type == null && (typeof type !== 'string' && typeof type !== 'function')) {
+    throw Error('The element type must be a string or function');
   }
 
   if (arguments[1] !== undefined && Object.prototype.toString.call(opts) !== '[object Object]') { 

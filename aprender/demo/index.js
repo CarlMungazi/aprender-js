@@ -5,9 +5,9 @@
 // - As a user, after clicking the search button I can view the search results
 // - As a user, I can clear the search results
 
-/* BEGINNING OF TEST */
+const aprender = require('../src/aprender');
 
-// const aprender = require('../src/aprender');
+/* BEGINNING OF TEST */
 
 // const oldTree = aprender.h('div', { 
 //     children: ['Search', aprender.h('p')] 
@@ -15,7 +15,7 @@
 // );
 
 // const newTree = aprender.h('div', { 
-//   children: ['No Search', aprender.h('span')] 
+//   children: ['No Search', aprender.h('p')] 
 //   }
 // );
 
@@ -30,82 +30,167 @@
 
 /* END OF TEST */
 
-const aprender = require('../src/aprender');
+function Form(props, updateFn) {
+  function Button() {
+    return aprender.h('button', { 
+        attrs: {
+          type: 'submit'
+        },
+        children: ['Search'] 
+      }
+    );
+  }
+  
+  function Search() {
+    return aprender.h('input', { 
+      attrs: { 
+        type: 'search',
+        oninput: (e) => {
 
-const Button = aprender.h('button', { 
-    attrs: {
-      type: 'submit'
+        }
+      }
+    });
+  }
+
+  return aprender.h('form', {
+      attrs: { 
+        id: 'form',
+        onsubmit: (e) => { 
+          e.preventDefault(); 
+        }
+      },
+      children: [
+        aprender.h(Search),
+        aprender.h(Button)
+      ]
     },
-    children: ['Search'] 
-  }
-);
+  );
+}
 
-const Search = aprender.h('input', { 
-  attrs: { 
-    type: 'search',
-    oninput: (e) => console.log(e.target.value)
-  }
-});
+function Dropdown(props, updateFn) {
 
-const Form = aprender.h('form', {
-    attrs: { 
-      id: 'form',
-      onsubmit: (e) => { 
-        e.preventDefault(); 
-        console.log('I am being submitted..')  
+  function DropdownOption(value) {
+    return aprender.h('option', {
+      attrs: {
+        value
+      },
+      children: value
+    })
+  }
+
+  return aprender.h('select', {
+    attrs: {
+      name: 'api-selection',
+      onchange: (e) => { 
+        props.updateFn({
+          selectedApiDesc: props.apiDescs[e.target.value],
+          selectedApi: e.target.value
+        })
       }
     },
-    children: [
-      Search,
-      Button
-    ]
-  },
-);
+    children: props.apiOptions.map(opt => DropdownOption(opt))
+  });
+}
 
-const Dropdown = aprender.h('select', {
-  attrs: {
-    onchange: (e) => console.log(e.target.value)
-  },
-  children: [
-    aprender.h('option', {
-      children: ['--Please select an API--']
-    }),
-    aprender.h('option', {
-      children: ['API 1']
-    }),
-    aprender.h('option', {
-      children: ['API 2']
-    })
-  ]
-});
-
-const SelectAPI = aprender.h('div', {
-  children: [
-    aprender.h('h3', { children: ['Select API: ']}),
-    Dropdown
-  ]
-})
-
-const InfoBox = description => aprender.h('div', {
-  children: [
-    aprender.h('p', {
-      children: [
-        'The description goes here'
-      ]
-    })
-  ]
-})
-
-const Container = () => {
+function SelectAPI(props) {
   return aprender.h('div', {
     children: [
-      InfoBox(),
-      SelectAPI,
-      Form
+      aprender.h('h3', { children: ['Select API: ']}),
+      aprender.h(Dropdown, 
+        { attrs: { props } }
+      )
     ]
   })
 }
 
-const App = aprender.render(Container());
+function InfoBox(props) {
+  return aprender.h('div', {
+    children: [
+      aprender.h('p', {
+        children: [
+          props.selectedApiDesc
+        ]
+      })
+    ]
+  })
+}
 
-aprender.mount(App, document.getElementById('app'));
+function Container(props, updateFn) {
+  const state = {
+    apiOptions: [
+      'API 1',
+      'API 2'
+    ],
+    apiDescs: {
+      'API 1': 'This is a description of API 1',
+      'API 2': 'This is a description of API 2'
+    },
+    selectedApi: props.selectedApi || 'API 1',
+    selectedApiDesc: props.selectedApiDesc || 'The description goes here',
+    searchTerm: props.searchTerm || ''
+  }
+
+  return aprender.h('div', {
+    children: [
+      aprender.h(
+        InfoBox, { 
+          attrs: { 
+            props: { selectedApiDesc: state.selectedApiDesc }
+          }
+        }
+      ),
+      aprender.h(SelectAPI, { 
+        attrs: { 
+          props: { 
+            apiOptions: state.apiOptions,
+            apiDescs: state.apiDescs,
+            updateFn
+          }
+        }
+      }),
+      aprender.h(Form, { 
+        attrs: { 
+          props: {
+            searchTerm: state.searchTerm
+          }
+        }
+      })
+    ]
+  })
+}
+
+// const App = aprender.render(
+//   aprender.h(
+//     ({count = 0}, updateFn) => {
+
+//       const increment = () => updateFn({ count: ++count });
+
+//       return aprender.h('button', {
+//         attrs:{
+//           onclick: increment
+//         },
+//         children: [`${count}`, aprender.h('div', {}, [])]
+//       })
+//     }
+//   )
+// );
+
+const _App = aprender.h(({count = 0}, updateFn) => {
+  const increment = () => updateFn({ count: ++count });
+
+  return aprender.h('button', {
+    attrs:{
+      onclick: increment
+    },
+    children: [
+      `${count}`,
+      aprender.h(() => (
+        aprender.h('div', {children: ['This is text']})
+      ))
+    ]
+  })
+});
+
+
+// aprender.mount(App, document.getElementById('app'));
+aprender.render(_App, {}, document.getElementById('app'));
