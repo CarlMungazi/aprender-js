@@ -30,167 +30,82 @@ const aprender = require('../src/aprender');
 
 /* END OF TEST */
 
-function Form(props, updateFn) {
-  function Button() {
-    return aprender.h('button', { 
-        attrs: {
-          type: 'submit'
-        },
-        children: ['Search'] 
-      }
-    );
-  }
-  
-  function Search() {
-    return aprender.h('input', { 
-      attrs: { 
-        type: 'search',
-        oninput: (e) => {
-
-        }
-      }
-    });
-  }
-
-  return aprender.h('form', {
-      attrs: { 
-        id: 'form',
-        onsubmit: (e) => { 
-          e.preventDefault(); 
-        }
-      },
-      children: [
-        aprender.h(Search),
-        aprender.h(Button)
-      ]
-    },
-  );
-}
-
-function Dropdown(props, updateFn) {
-
-  function DropdownOption(value) {
-    return aprender.h('option', {
-      attrs: {
-        value
-      },
-      children: value
-    })
-  }
-
-  return aprender.h('select', {
+const Button = aprender.h('button', { 
     attrs: {
-      name: 'api-selection',
-      onchange: (e) => { 
-        props.updateFn({
-          selectedApiDesc: props.apiDescs[e.target.value],
-          selectedApi: e.target.value
-        })
-      }
+      type: 'submit'
     },
-    children: props.apiOptions.map(opt => DropdownOption(opt))
-  });
-}
-
-function SelectAPI(props) {
-  return aprender.h('div', {
-    children: [
-      aprender.h('h3', { children: ['Select API: ']}),
-      aprender.h(Dropdown, 
-        { attrs: { props } }
-      )
-    ]
-  })
-}
-
-function InfoBox(props) {
-  return aprender.h('div', {
-    children: [
-      aprender.h('p', {
-        children: [
-          props.selectedApiDesc
-        ]
-      })
-    ]
-  })
-}
-
-function Container(props, updateFn) {
-  const state = {
-    apiOptions: [
-      'API 1',
-      'API 2'
-    ],
-    apiDescs: {
-      'API 1': 'This is a description of API 1',
-      'API 2': 'This is a description of API 2'
-    },
-    selectedApi: props.selectedApi || 'API 1',
-    selectedApiDesc: props.selectedApiDesc || 'The description goes here',
-    searchTerm: props.searchTerm || ''
+    children: ['Search'] 
   }
+);
+  
 
-  return aprender.h('div', {
-    children: [
-      aprender.h(
-        InfoBox, { 
-          attrs: { 
-            props: { selectedApiDesc: state.selectedApiDesc }
-          }
-        }
-      ),
-      aprender.h(SelectAPI, { 
-        attrs: { 
-          props: { 
-            apiOptions: state.apiOptions,
-            apiDescs: state.apiDescs,
-            updateFn
-          }
-        }
-      }),
-      aprender.h(Form, { 
-        attrs: { 
-          props: {
-            searchTerm: state.searchTerm
-          }
-        }
-      })
-    ]
-  })
-}
+const Search = aprender.h('input', { 
+  attrs: { 
+    type: 'search',
+    oninput: (e) => console.log(e.target.value)
+  }
+});
+  
+const Form = aprender.h('form', {
+  attrs: { 
+    id: 'form',
+    onsubmit: (e) => { 
+      e.preventDefault(); 
+      console.log('I am being submitted..')  
+    }
+  },
+  children: [
+    Search,
+    Button
+  ]
+})
+   
 
-// const App = aprender.render(
-//   aprender.h(
-//     ({count = 0}, updateFn) => {
-
-//       const increment = () => updateFn({ count: ++count });
-
-//       return aprender.h('button', {
-//         attrs:{
-//           onclick: increment
-//         },
-//         children: [`${count}`, aprender.h('div', {}, [])]
-//       })
-//     }
-//   )
-// );
-
-const _App = aprender.h(({count = 0}, updateFn) => {
-  const increment = () => updateFn({ count: ++count });
-
-  return aprender.h('button', {
-    attrs:{
-      onclick: increment
-    },
-    children: [
-      `${count}`,
-      aprender.h(() => (
-        aprender.h('div', {children: ['This is text']})
-      ))
-    ]
-  })
+const Dropdown = aprender.h('select', {
+  attrs: {
+    onchange: (e) => console.log(e.target.value)
+  },
+  children: [
+    aprender.h('option', {
+      children: ['--Please select an API--']
+    }),
+    aprender.h('option', {
+      children: ['API 1']
+    }),
+    aprender.h('option', {
+      children: ['API 2']
+    })
+  ]
 });
 
+const SelectAPI = aprender.h('div', {
+  children: [
+    aprender.h('h3', { children: ['Select API: ']}),
+    Dropdown
+  ]
+})
 
-// aprender.mount(App, document.getElementById('app'));
-aprender.render(_App, {}, document.getElementById('app'));
+const InfoBox = description => aprender.h('div', {
+  children: [
+    aprender.h('p', {
+      children: [
+        'The description goes here'
+      ]
+    })
+  ]
+})
+  
+
+const Container = () => {
+  return aprender.h('div', {
+    children: [
+      InfoBox(),
+      SelectAPI,
+      Form
+    ]
+  })
+}
+  
+const App = aprender.render(Container());
+
+aprender.mount(App, document.getElementById('app'));
